@@ -1,0 +1,86 @@
+<form class="form" [formGroup]="empleadoForm" (ngSubmit)="onSubmit()">
+  <label for="nombreCompleto">Nombre Completo:</label>
+  <input class="input" type="text" id="nombreCompleto" formControlName="nombreCompleto" />
+
+  <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+  <input class="input" type="date" id="fechaNacimiento" formControlName="fechaNacimiento" />
+
+  <label for="edad">Edad:</label>
+  <input class="input" type="number" id="edad" formControlName="edad" />
+
+  <label for="cargo">Cargo:</label>
+  <input class="input" type="text" id="cargo" formControlName="cargo" />
+
+  <button class="button" type="submit">
+    <span class="button__text">Agregar</span>
+    <span class="button__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
+        <line y2="19" y1="5" x2="12" x1="12"></line>
+        <line y2="12" y1="12" x2="19" x1="5"></line>
+      </svg>
+    </span>
+  </button>
+</form>
+
+<br>
+
+<div *ngIf="empleados.length > 0"  class="container">
+  <input class="inputs" type="text" [(ngModel)]="searchText" placeholder="Buscar por ID, Nombre o Puesto" />
+
+  <h2>Listado de Empleados</h2>
+  <table class="table table-fixed">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre Completo</th>
+        <th>Cargo</th>
+        <th>Edad</th>
+        <th>Estatus</th>
+        <th>Acciones:</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let empleado of empleados" [hidden]="!cumpleCriterio(empleado)">
+        <td>{{ empleado.id }}</td>
+        <td>{{ empleado.nombreCompleto }}</td>
+        <td>{{ empleado.cargo }}</td>
+        <td>
+          <span *ngIf="!empleado.editandoEdad">{{ empleado.edad }}</span>
+          <span *ngIf="empleado.editandoEdad">
+            <input type="number" [(ngModel)]="empleado.nuevaEdad" />
+          </span>
+        </td>
+        <td>{{ empleado.estatus }}</td>
+        <td>
+          <button class="buttonz" *ngIf="puedeEditar(empleado.estatus)" (click)="editarInformacion(empleado)">Editar Información</button>
+          <button class="buttonz" *ngIf="empleado.estatus === 'inactivo'" (click)="toggleEdicionEdad(empleado)">
+            {{ empleado.editandoEdad ? 'Guardar Edad' : 'Editar Edad' }}
+          </button>
+          <button class="buttonz" (click)="cambiarEstatus(empleado.id)">{{ empleado.estatus === 'activo' ? 'Inactivar estatus' : 'Activar estatus' }}</button>
+          <button class="buttonz"  (click)="eliminarEmpleado(empleado.id)">Eliminar Empleado</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="empleadoSeleccionado">
+  <h2>Editando {{ empleadoSeleccionado.nombreCompleto }}</h2>
+  <form class="forms" [formGroup]="edicionForm">
+    <label for="nombreCompleto">Nombre Completo:</label>
+    <input class="input" type="text" id="nombreCompleto" formControlName="nombreCompleto" />
+
+    <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+    <input class="inputz" type="date" id="fechaNacimiento" formControlName="fechaNacimiento" />
+
+    <label for="edad">Edad:</label>
+    <input class="inputz" type="number" id="edad" formControlName="edad" />
+
+    <label for="cargo">Cargo:</label>
+    <input class="inputz" type="text" id="cargo" formControlName="cargo" />
+
+    <button class="buttonz"  (click)="guardarEdicion()">Guardar Cambios</button>
+    <button class="buttonz"(click)="cancelarEdicion()">Cancelar</button>
+  </form>
+</div>
